@@ -14,6 +14,10 @@ Yii Framework 2 Change Log
 - Bug #18479: Fix invalid argument type for `preg_split` in `\yii\console\Controller` (gazooz)
 - Bug #18477: Fix detecting availability of Xdebug's stack trace in `yii\base\ErrorException` (bizley)
 - Bug #18480: Transactions are not committed using the dblib driver (bbrunekreeft)
+- Enh #18493: Faster request parsing for REST UrlRule with prefix handling (bizley)
+- Enh #18487: Allow creating URLs for non-GET-verb rules (bizley)
+- Bug #8750: Fix MySQL support when running in `ANSI`/`ANSI_QUOTES` modes (brandonkelly)
+- Bug #18505: Fixed `yii\helpers\ArrayHelper::getValue()` for ArrayAccess objects with explicitly defined properties (samdark)
 
 
 2.0.40 December 23, 2020
