@@ -114,7 +114,7 @@ But there are other installation options available:
 Installing Assets <span id="installing-assets"></span>
 -----------------
 
-Yii relies on [Bower](http://bower.io/) and/or [NPM](https://www.npmjs.org/) packages for the asset (CSS and JavaScript) libraries installation.
+Yii relies on [Bower](http://bower.io/) and/or [NPM](https://www.npmjs.com/) packages for the asset (CSS and JavaScript) libraries installation.
 It uses Composer to obtain these libraries, allowing PHP and CSS/JavaScript package versions to resolve at the same time.
 This can be achieved either by usage of [asset-packagist.org](https://asset-packagist.org) or [composer asset plugin](https://github.com/francoispluchino/composer-asset-plugin/).
 Please refer to [Assets documentation](structure-assets.md) for more details.
@@ -378,5 +378,5 @@ It's recommended to host the application in a virtual host (Web site) where docu
 </configuration>
 ```
 Also the following list of Microsoft's official resources could be useful in order to configure PHP on IIS:
- 1. [How to set up your first IIS Web site](https://support.microsoft.com/en-us/help/323972/how-to-set-up-your-first-iis-web-site)
+ 1. [How to set up your first IIS Web site](https://docs.microsoft.com/en-us/iis/manage/creating-websites/scenario-build-a-static-website-on-iis)
  2. [Configure a PHP Website on IIS](https://docs.microsoft.com/en-us/iis/application-frameworks/scenario-build-a-php-website-on-iis/configure-a-php-website-on-iis)

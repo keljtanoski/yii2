@@ -221,7 +221,7 @@ SQL;
         }
         $this->assertEquals($numericCol, $row['numeric_col']);
         if ($this->driverName === 'mysql' || $this->driverName === 'oci' || (\defined('HHVM_VERSION') && \in_array($this->driverName, ['sqlite', 'pgsql']))) {
-            $this->assertEquals($boolCol, (int)$row['bool_col']);
+            $this->assertEquals($boolCol, (int) $row['bool_col']);
         } else {
             $this->assertEquals($boolCol, $row['bool_col']);
         }
@@ -1367,10 +1367,15 @@ SQL;
                 'SELECT * FROM customer WHERE id IN (\'1, 2\')',
             ],
             [
+                'SELECT * FROM customer WHERE id  = ? AND active = ?',
+                [1 => 1, 2 => false],
+                'SELECT * FROM customer WHERE id  = 1 AND active = FALSE',
+            ],
+            [
                 'SELECT NOW() = :now',
                 [':now' => new Expression('NOW()')],
                 'SELECT NOW() = \'NOW()\'',
-            ]
+            ],
         ];
     }
 

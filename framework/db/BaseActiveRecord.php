@@ -226,7 +226,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      *    Or add [[\yii\behaviors\OptimisticLockBehavior|OptimisticLockBehavior]] to your model
      *    class in order to automate the process.
      * 3. In the Web form that collects the user input, add a hidden field that stores
-     *    the lock version of the recording being updated.
+     *    the lock version of the record being updated.
      * 4. In the controller action that does the data updating, try to catch the [[StaleObjectException]]
      *    and implement necessary business logic (e.g. merging the changes, prompting stated data)
      *    to resolve the conflict.
@@ -335,9 +335,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     {
         try {
             return $this->__get($name) !== null;
-        } catch (\Throwable $t) {
+        } catch (\Exception $t) {
             return false;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -376,7 +376,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * ```php
      * public function getCountry()
      * {
-     *     return $this->hasOne(Country::className(), ['id' => 'country_id']);
+     *     return $this->hasOne(Country::class, ['id' => 'country_id']);
      * }
      * ```
      *
@@ -411,7 +411,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      * ```php
      * public function getOrders()
      * {
-     *     return $this->hasMany(Order::className(), ['customer_id' => 'id']);
+     *     return $this->hasMany(Order::class, ['customer_id' => 'id']);
      * }
      * ```
      *
@@ -1121,7 +1121,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getPrimaryKey($asArray = false)
     {
-        $keys = $this->primaryKey();
+        $keys = static::primaryKey();
         if (!$asArray && count($keys) === 1) {
             return isset($this->_attributes[$keys[0]]) ? $this->_attributes[$keys[0]] : null;
         }
@@ -1152,7 +1152,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getOldPrimaryKey($asArray = false)
     {
-        $keys = $this->primaryKey();
+        $keys = static::primaryKey();
         if (empty($keys)) {
             throw new Exception(get_class($this) . ' does not have a primary key. You should either define a primary key for the corresponding table or override the primaryKey() method.');
         }
@@ -1294,6 +1294,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function link($name, $model, $extraColumns = [])
     {
+        /* @var $relation ActiveQueryInterface|ActiveQuery */
         $relation = $this->getRelation($name);
 
         if ($relation->via !== null) {
@@ -1330,16 +1331,16 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                 $record->insert(false);
             } else {
                 /* @var $viaTable string */
-                static::getDb()->createCommand()
-                    ->insert($viaTable, $columns)->execute();
+                static::getDb()->createCommand()->insert($viaTable, $columns)->execute();
             }
         } else {
             $p1 = $model->isPrimaryKey(array_keys($relation->link));
             $p2 = static::isPrimaryKey(array_values($relation->link));
             if ($p1 && $p2) {
-                if ($this->getIsNewRecord() && $model->getIsNewRecord()) {
-                    throw new InvalidCallException('Unable to link models: at most one model can be newly created.');
-                } elseif ($this->getIsNewRecord()) {
+                if ($this->getIsNewRecord()) {
+                    if ($model->getIsNewRecord()) {
+                        throw new InvalidCallException('Unable to link models: at most one model can be newly created.');
+                    }
                     $this->bindModels(array_flip($relation->link), $this, $model);
                 } else {
                     $this->bindModels($relation->link, $model, $this);
@@ -1413,7 +1414,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
             foreach (array_keys($columns) as $a) {
                 $nulls[$a] = null;
             }
-            if ($viaRelation->on !== null) {
+            if (property_exists($viaRelation, 'on') && $viaRelation->on !== null) {
                 $columns = ['and', $columns, $viaRelation->on];
             }
             if (is_array($relation->via)) {
@@ -1492,6 +1493,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function unlinkAll($name, $delete = false)
     {
+        /* @var $relation ActiveQueryInterface|ActiveQuery */
         $relation = $this->getRelation($name);
 
         if ($relation->via !== null) {
@@ -1513,7 +1515,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
             if (!empty($viaRelation->where)) {
                 $condition = ['and', $condition, $viaRelation->where];
             }
-            if (!empty($viaRelation->on)) {
+            if (property_exists($viaRelation, 'on') && !empty($viaRelation->on)) {
                 $condition = ['and', $condition, $viaRelation->on];
             }
             if (is_array($relation->via)) {
@@ -1550,7 +1552,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
                 if (!empty($relation->where)) {
                     $condition = ['and', $condition, $relation->where];
                 }
-                if (!empty($relation->on)) {
+                if (property_exists($relation, 'on') && !empty($relation->on)) {
                     $condition = ['and', $condition, $relation->on];
                 }
                 if ($delete) {
